@@ -22,7 +22,7 @@ This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a tim
 
 2. Compile the source code:
    ```
-   g++ -std=c++11 -pthread n-puzzle.cpp -o n-puzzle
+   g++ -std=c++11 -pthread npuzzle.cpp -o npuzzle
    ```
    
    Or if using Visual Studio:
@@ -31,7 +31,7 @@ This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a tim
 
 3. Run the executable:
    ```
-   ./n-puzzle
+   ./npuzzle
    ```
 
 ## How to Play
