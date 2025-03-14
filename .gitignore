@@ -1,4 +1,7 @@
 ### C++ ###
+# Experiment
+coba.cpp
+
 # Prerequisites
 *.d
 
@@ -31,3 +34,9 @@
 *.exe
 *.out
 *.app
+
+# Debug files
+/.vscode
+
+# Databases
+*.txt
