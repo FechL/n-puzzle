@@ -38,22 +38,20 @@ This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a tim
 
 1. When you start the game, you'll be prompted to select a puzzle size between 2x2 and 9x9.
 2. The game will generate a randomized puzzle of the selected size.
-3. Use the arrow keys to move tiles:
-   - Up arrow: Move the tile below the empty space up
-   - Down arrow: Move the tile above the empty space down
-   - Left arrow: Move the tile to the right of the empty space left
-   - Right arrow: Move the tile to the left of the empty space right
+3. Use the arrow keys to move tiles
 4. The objective is to arrange the tiles in numerical order from 1 to n² - 1, with the empty space in the bottom-right position.
 5. The game tracks the number of moves made and the time elapsed since your first move.
-6. When you complete the puzzle, you'll be prompted to enter your name for the high score list.
+6. If it is impossible to solve, just refill it.
 
 ## Controls
 
-- **Arrow Keys**: Move tiles
-- **R**: Restart the current puzzle
-- **E**: Generate a new randomized puzzle
-- **B**: Go back to the size selection menu
-- **Esc**: Exit the game
+| Keys       | Description                       |
+|------------|-----------------------------------|
+| Arrow keys | Move tiles                        |
+| **R**      |  Restart the current puzzle       |
+| **E**      |  Generate a new randomized puzzle | 
+| **B**      |  Go back to the menu              | 
+| **Esc**    |  Exit the game                    | 
 
 ## Features
 
@@ -80,9 +78,3 @@ Contributions to improve the game are welcome! Please feel free to submit a pull
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- N-Puzzle by FechL
-- Inspired by the classic 15-puzzle game
-- Special thanks to all contributors and testers
