@@ -5,6 +5,8 @@ N-Puzzle is a classic sliding puzzle game implemented in C++. The game consists 
 
 This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a timer, move counter, and high score tracking. The game uses a console-based interface with keyboard controls for an intuitive gaming experience.
 
+![9x9.png](img/9x9.png)
+
 ## Installation
 
 ### Prerequisites
