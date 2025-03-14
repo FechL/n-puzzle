@@ -55,7 +55,7 @@ void fillArray() {
     moves = 0;
 }
 
-bool cekMenang() {
+bool isSolved() {
     int idx = 1;
     for (int i = 0; i < sizeN; i++) {
         for (int j = 0; j < sizeN; j++) {
@@ -249,7 +249,7 @@ int main() {
                 lock_guard<mutex> lock(gameMutex);
 
                 draw();
-                if (cekMenang()) {
+                if (isSolved()) {
                     gameWon = true;
                     int timeTaken = time(0) - startTime;
                     (timeTaken > 170000000 ? timeTaken = 0 : timeTaken);

@@ -74,7 +74,3 @@ This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a tim
 ## Contributing
 
 Contributions to improve the game are welcome! Please feel free to submit a pull request or open an issue to discuss potential changes or enhancements.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
