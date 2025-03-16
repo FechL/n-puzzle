@@ -22,14 +22,18 @@ bool gameRunning = true;
 bool gameWon = false;
 bool isInGame = false;
 bool restart = false;
+bool five_seconds = false;
 
 mutex gameMutex;
 
-void title(bool inGame = false) {
+void title(bool inGame = false, int count = 26) {
     system("cls");
     cout << " N-Puzzle by @FechL" << endl;
-    if (!inGame)
-        cout << "----------------------" << endl;
+    if (!inGame) {
+        for (int i = 0; i < count; i++)
+            cout << "-";
+        cout << endl;
+    }
 }
 
 void fillArray() {
@@ -81,7 +85,7 @@ void draw(bool win = false, int timeTaken = 0) {
     title(true);
     for (int i = 0; i < sizeN * 3; i++)
         cout << "-";
-    cout << "----------------" << endl;
+    cout << "-------------------------" << endl;
     for (int i = 0; i < sizeN; i++) {
         for (int j = 0; j < sizeN; j++) {
             if (arr[i][j] == 0)
@@ -90,23 +94,32 @@ void draw(bool win = false, int timeTaken = 0) {
                 cout << (arr[i][j] < 10 ? " " : "") << arr[i][j] << " ";
         }
         if (i == 0)
-            cout << "   Moves: " << moves;
+            cout << "         Moves: " << moves;
         if (i == 1)
-            cout << "   Time : " << (gameStarted ? time(0) - startTime : 0)
-                 << "s";
+            cout << "         Time : "
+                 << (gameStarted ? time(0) - startTime : 0) << "s";
         cout << endl;
     }
     for (int i = 0; i < sizeN * 3; i++)
         cout << "-";
-    cout << "----------------" << endl;
+    cout << "-------------------------" << endl;
     if (win) {
         cout << "You win! in " << timeTaken;
         if (timeTaken == 1)
-            cout << " second!" << endl;
+            cout << " second." << endl;
         else
-            cout << " seconds!" << endl;
+            cout << " seconds." << endl;
     } else {
-        cout << "Use arrow key to move!" << endl;
+        cout << "tips: ";
+        if (int(time(0) - startTime) % 5 == 0)
+            five_seconds = !five_seconds;
+        if (five_seconds)
+            cout << "Refill if its impossible." << endl;
+        else
+            cout << "Use arrow key to move!" << endl;
+        for (int i = 0; i < sizeN * 3; i++)
+            cout << "-";
+        cout << "-------------------------" << endl;
         cout << "[R] Restart [E] Refill" << endl;
         cout << "[B] Back    [Esc] Exit" << endl;
     }
@@ -150,13 +163,23 @@ void showHighScores() {
 
     sort(scores.begin(), scores.end());
 
-    cout << "High Scores (Size " << sizeN << "):" << endl;
-    cout << "----------------------" << endl;
+    cout << "      High Scores (Size " << sizeN << ")" << endl;
+    cout << "--------------------------------" << endl;
     int idx = 1;
     for (auto &score : scores) {
-        cout << idx++ << (idx < 10 ? "  |" : " |") << score.second.second
-             << " | " << score.first << "s | " << score.second.first << " moves"
-             << endl;
+        cout << idx++ << (idx < 11 ? "  | " : " | ") << score.second.second
+             << (score.first < 10
+                     ? " |    "
+                     : (score.first < 100
+                            ? " |   "
+                            : (score.first < 1000 ? " |  " : " | ")))
+             << score.first
+             << (score.second.first < 10
+                     ? "s |    "
+                     : (score.second.first < 100
+                            ? "s |   "
+                            : (score.second.first < 1000 ? "s |  " : "s | ")))
+             << score.second.first << " moves" << endl;
         if (idx > 10)
             break;
     }
@@ -179,7 +202,7 @@ bool menu() {
     cout << "[q] Play" << endl;
     cout << "[w] High Scores" << endl;
     cout << "[Esc] Exit" << endl;
-    cout << "----------------------" << endl;
+    cout << "-------------------------" << endl;
     while (true) {
         int key = getch();
         switch (key) {
@@ -196,11 +219,11 @@ bool menu() {
                 title();
                 cout << "High Scores (2-9): ";
                 cin >> sizeN;
-                cout << "----------------------" << endl;
+                cout << "-------------------------" << endl;
             } while (sizeN < 2 || sizeN > 9);
-            title();
+            title(false, 32);
             showHighScores();
-            cout << "----------------------" << endl;
+            cout << "--------------------------------" << endl;
             cout << "[B] Back" << endl;
             key = getch();
             if (key == 'b' || key == 'B')
@@ -254,12 +277,12 @@ int main() {
                     int timeTaken = time(0) - startTime;
                     (timeTaken > 170000000 ? timeTaken = 0 : timeTaken);
                     draw(true, timeTaken);
-                    cout << "----------------------" << endl;
+                    cout << "-------------------------" << endl;
                     cout << "Enter name: ";
                     string name;
                     cin >> name;
                     saveScore(name, timeTaken, moves);
-                    cout << "----------------------" << endl;
+                    cout << "-------------------------" << endl;
                     cout << "[H] Show highscores" << endl;
                     cout << "[B] Back [Esc] Exit" << endl;
                     while (true) {
@@ -267,7 +290,7 @@ int main() {
                         if (key == 'h' || key == 'H') {
                             title();
                             showHighScores();
-                            cout << "----------------------" << endl;
+                            cout << "-------------------------" << endl;
                             cout << "[B] Back" << endl;
                             while (true) {
                                 key = getch();
