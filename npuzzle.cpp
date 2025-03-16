@@ -26,7 +26,7 @@ bool five_seconds = false;
 
 mutex gameMutex;
 
-void title(bool inGame = false, int count = 26) {
+void title(bool inGame = false, int count = 25) {
     system("cls");
     cout << " N-Puzzle by @FechL" << endl;
     if (!inGame) {
@@ -82,6 +82,7 @@ void swapTile(int p, int q) {
 }
 
 void draw(bool win = false, int timeTaken = 0) {
+    int timer = time(0) - startTime;
     title(true);
     for (int i = 0; i < sizeN * 3; i++)
         cout << "-";
@@ -96,22 +97,18 @@ void draw(bool win = false, int timeTaken = 0) {
         if (i == 0)
             cout << "         Moves: " << moves;
         if (i == 1)
-            cout << "         Time : "
-                 << (gameStarted ? time(0) - startTime : 0) << "s";
+            cout << "         Time : " << (gameStarted ? timer : 0) << "s";
         cout << endl;
     }
     for (int i = 0; i < sizeN * 3; i++)
         cout << "-";
     cout << "-------------------------" << endl;
     if (win) {
-        cout << "You win! in " << timeTaken;
-        if (timeTaken == 1)
-            cout << " second." << endl;
-        else
-            cout << " seconds." << endl;
+        cout << "You win! in " << timeTaken
+             << (timeTaken == 1 ? " second." : " seconds.") << endl;
     } else {
         cout << "tips: ";
-        if (int(time(0) - startTime) % 5 == 0)
+        if (timer % 5 == 0)
             five_seconds = !five_seconds;
         if (five_seconds)
             cout << "Refill if its impossible." << endl;
@@ -202,7 +199,6 @@ bool menu() {
     cout << "[q] Play" << endl;
     cout << "[w] High Scores" << endl;
     cout << "[Esc] Exit" << endl;
-    cout << "-------------------------" << endl;
     while (true) {
         int key = getch();
         switch (key) {
@@ -277,20 +273,20 @@ int main() {
                     int timeTaken = time(0) - startTime;
                     (timeTaken > 170000000 ? timeTaken = 0 : timeTaken);
                     draw(true, timeTaken);
-                    cout << "-------------------------" << endl;
+                    cout << "-------------------------------" << endl;
                     cout << "Enter name: ";
                     string name;
                     cin >> name;
                     saveScore(name, timeTaken, moves);
-                    cout << "-------------------------" << endl;
+                    cout << "-------------------------------" << endl;
                     cout << "[H] Show highscores" << endl;
                     cout << "[B] Back [Esc] Exit" << endl;
                     while (true) {
                         int key = getch();
                         if (key == 'h' || key == 'H') {
-                            title();
+                            title(false, 32);
                             showHighScores();
-                            cout << "-------------------------" << endl;
+                            cout << "-------------------------------" << endl;
                             cout << "[B] Back" << endl;
                             while (true) {
                                 key = getch();
