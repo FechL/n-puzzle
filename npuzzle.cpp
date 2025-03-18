@@ -180,6 +180,8 @@ void showHighScores() {
         if (idx > 10)
             break;
     }
+    if (idx == 1)
+        cout << "No high scores yet." << endl;
 }
 
 void updateTimeDisplay() {
