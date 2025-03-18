@@ -4,12 +4,17 @@
 #include <ctime>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <sstream>
+#include <string>
 #include <thread>
 #include <vector>
 
 using namespace std;
+
+// Simple encryption key
+const string ENCRYPTION_KEY = "N-PUZZLE-KEY";
 
 int sizeN;
 vector<vector<int>> arr;
@@ -25,6 +30,15 @@ bool restart = false;
 bool five_seconds = false;
 
 mutex gameMutex;
+
+// Simple encryption/decryption function using XOR
+string encryptDecrypt(const string &input) {
+    string output = input;
+    for (size_t i = 0; i < input.length(); i++) {
+        output[i] = input[i] ^ ENCRYPTION_KEY[i % ENCRYPTION_KEY.length()];
+    }
+    return output;
+}
 
 void title(bool inGame = false, int count = 25) {
     system("cls");
@@ -122,41 +136,98 @@ void draw(bool win = false, int timeTaken = 0) {
     }
 }
 
+// Modified function to save score to a single encrypted database file
 void saveScore(string name, int timeTaken, int moves) {
     name.resize(6, ' ');
-    string filename = "highscores_" + to_string(sizeN) + ".txt";
-    vector<pair<int, pair<int, string>>> scores;
+    const string filename = "highscores.dat";
 
-    ifstream fileIn(filename);
-    string playerName;
-    int t, m;
-    while (fileIn >> playerName >> t >> m) {
-        scores.push_back({t, {m, playerName}});
+    // Map to store all highscores by size
+    map<int, vector<pair<int, pair<int, string>>>> allScores;
+
+    // Try to read existing scores
+    ifstream fileIn(filename, ios::binary);
+    if (fileIn.is_open()) {
+        string encryptedData((istreambuf_iterator<char>(fileIn)),
+                             istreambuf_iterator<char>());
+        fileIn.close();
+
+        if (!encryptedData.empty()) {
+            string decryptedData = encryptDecrypt(encryptedData);
+            stringstream ss(decryptedData);
+
+            int size, count;
+            while (ss >> size >> count) {
+                vector<pair<int, pair<int, string>>> sizeScores;
+                for (int i = 0; i < count; i++) {
+                    string playerName;
+                    int t, m;
+                    ss >> playerName >> t >> m;
+                    sizeScores.push_back({t, {m, playerName}});
+                }
+                allScores[size] = sizeScores;
+            }
+        }
     }
-    fileIn.close();
 
-    scores.push_back({timeTaken, {moves, name}});
-    sort(scores.begin(), scores.end());
+    // Add new score
+    allScores[sizeN].push_back({timeTaken, {moves, name}});
 
-    ofstream fileOut(filename);
-    for (auto &score : scores)
-        fileOut << score.second.second << " " << score.first << " "
-                << score.second.first << endl;
+    // Sort scores for current size
+    sort(allScores[sizeN].begin(), allScores[sizeN].end());
+
+    // Prepare data for saving
+    stringstream dataToSave;
+    for (const auto &sizeEntry : allScores) {
+        dataToSave << sizeEntry.first << " " << sizeEntry.second.size() << " ";
+        for (const auto &score : sizeEntry.second) {
+            dataToSave << score.second.second << " " << score.first << " "
+                       << score.second.first << " ";
+        }
+    }
+
+    // Encrypt and save
+    string encryptedData = encryptDecrypt(dataToSave.str());
+    ofstream fileOut(filename, ios::binary);
+    fileOut.write(encryptedData.c_str(), encryptedData.size());
+    fileOut.close();
 }
 
+// Modified function to show high scores from the unified database
 void showHighScores() {
-    string filename = "highscores_" + to_string(sizeN) + ".txt";
-    ifstream file(filename);
+    const string filename = "highscores.dat";
     vector<pair<int, pair<int, string>>> scores;
-    string name;
-    int timeTaken, moves;
 
-    while (file >> name >> timeTaken >> moves) {
-        while (name.length() < 6)
-            name += ' ';
-        scores.push_back({timeTaken, {moves, name}});
+    ifstream file(filename, ios::binary);
+    if (file.is_open()) {
+        string encryptedData((istreambuf_iterator<char>(file)),
+                             istreambuf_iterator<char>());
+        file.close();
+
+        if (!encryptedData.empty()) {
+            string decryptedData = encryptDecrypt(encryptedData);
+            stringstream ss(decryptedData);
+
+            int size, count;
+            while (ss >> size >> count) {
+                if (size == sizeN) {
+                    for (int i = 0; i < count; i++) {
+                        string name;
+                        int timeTaken, moves;
+                        ss >> name >> timeTaken >> moves;
+                        scores.push_back({timeTaken, {moves, name}});
+                    }
+                    break; // Found our size, no need to continue
+                } else {
+                    // Skip scores for other sizes
+                    for (int i = 0; i < count; i++) {
+                        string name;
+                        int timeTaken, moves;
+                        ss >> name >> timeTaken >> moves;
+                    }
+                }
+            }
+        }
     }
-    file.close();
 
     sort(scores.begin(), scores.end());
 
@@ -164,6 +235,8 @@ void showHighScores() {
     cout << "--------------------------------" << endl;
     int idx = 1;
     for (auto &score : scores) {
+        for (int i = 0; score.second.second.length() < 6; i++)
+            score.second.second += " ";
         cout << idx++ << (idx < 11 ? "  | " : " | ") << score.second.second
              << (score.first < 10
                      ? " |    "
@@ -188,9 +261,8 @@ void updateTimeDisplay() {
     while (gameRunning) {
         {
             lock_guard<mutex> lock(gameMutex);
-            if (gameStarted && !gameWon && isInGame) {
+            if (gameStarted && !gameWon && isInGame)
                 draw();
-            }
         }
         this_thread::sleep_for(chrono::seconds(1));
     }
@@ -295,10 +367,11 @@ int main() {
                             cout << "-------------------------------" << endl;
                             cout << "[B] Back" << endl;
                             while (true) {
-                                key = getch();
+                                int key = getch();
                                 if (key == 'b' || key == 'B')
-                                    menu();
+                                    break;
                             }
+                            break;
                         }
                         if (key == 27) {
                             gameRunning = false;
