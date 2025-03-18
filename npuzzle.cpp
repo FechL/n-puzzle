@@ -205,16 +205,20 @@ bool menu() {
         case 'q':
             do {
                 title();
-                cout << "Size n-puzzle (2-9): ";
-                cin >> sizeN;
+                cout << "Choose size n-puzzle\n[2][3][4][5][6][7][8][9]"
+                     << endl;
+                key = getch();
+                sizeN = key - '0';
             } while (sizeN < 2 || sizeN > 9);
             return false;
             break;
         case 'w':
             do {
                 title();
-                cout << "High Scores (2-9): ";
-                cin >> sizeN;
+                cout << "Choose size n-puzzle\n[2][3][4][5][6][7][8][9]"
+                     << endl;
+                key = getch();
+                sizeN = key - '0';
                 cout << "-------------------------" << endl;
             } while (sizeN < 2 || sizeN > 9);
             title(false, 32);
