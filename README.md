@@ -1,6 +1,5 @@
 # N-Puzzle Game
 
-## Description
 N-Puzzle is a classic sliding puzzle game implemented in C++. The game consists of a grid of numbered tiles with one tile missing, allowing adjacent tiles to be moved into the empty space. The objective is to arrange the tiles in numerical order by making sliding moves that use the empty space.
 
 This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a timer, move counter, and high score tracking. The game uses a console-based interface with keyboard controls for an intuitive gaming experience.
