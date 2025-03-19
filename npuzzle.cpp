@@ -146,15 +146,12 @@ void draw(bool win = false, int timeTaken = 0) {
     }
 }
 
-// Modified function to save score to a single encrypted database file
 void saveScore(string name, int timeTaken, int moves) {
     name.resize(6, ' ');
-    const string filename = "highscores.dat";
+    const string filename = "data.dat";
 
-    // Map to store all highscores by size
     map<int, vector<pair<int, pair<int, string>>>> allScores;
 
-    // Try to read existing scores
     ifstream fileIn(filename, ios::binary);
     if (fileIn.is_open()) {
         string encryptedData((istreambuf_iterator<char>(fileIn)),
@@ -179,13 +176,10 @@ void saveScore(string name, int timeTaken, int moves) {
         }
     }
 
-    // Add new score
     allScores[sizeN].push_back({timeTaken, {moves, name}});
 
-    // Sort scores for current size
     sort(allScores[sizeN].begin(), allScores[sizeN].end());
 
-    // Prepare data for saving
     stringstream dataToSave;
     for (const auto &sizeEntry : allScores) {
         dataToSave << sizeEntry.first << " " << sizeEntry.second.size() << " ";
@@ -202,9 +196,8 @@ void saveScore(string name, int timeTaken, int moves) {
     fileOut.close();
 }
 
-// Modified function to show high scores from the unified database
 void showHighScores() {
-    const string filename = "highscores.dat";
+    const string filename = "data.dat";
     vector<pair<int, pair<int, string>>> scores;
 
     ifstream file(filename, ios::binary);
