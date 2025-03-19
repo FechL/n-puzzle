@@ -1,6 +1,7 @@
 ### C++ ###
 # Experiment
 coba.cpp
+coba_credits.cpp
 
 # Prerequisites
 *.d
@@ -39,4 +40,8 @@ coba.cpp
 /.vscode
 
 # Databases
+*.dat
+
+# Other files
+*.log
 *.txt

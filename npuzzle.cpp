@@ -31,12 +31,22 @@ bool five_seconds = false;
 
 mutex gameMutex;
 
+string encryptDecrypt(const string &input);
+void title(bool inGame, int count);
+void fillArray();
+bool isSolved();
+void swapTile(int p, int q);
+void draw(bool win, int timeTaken);
+void saveScore(string name, int timeTaken, int moves);
+void showHighScores();
+void updateTimeDisplay();
+bool menu();
+
 // Simple encryption/decryption function using XOR
 string encryptDecrypt(const string &input) {
     string output = input;
-    for (size_t i = 0; i < input.length(); i++) {
+    for (size_t i = 0; i < input.length(); i++)
         output[i] = input[i] ^ ENCRYPTION_KEY[i % ENCRYPTION_KEY.length()];
-    }
     return output;
 }
 
@@ -277,6 +287,7 @@ bool menu() {
         int key = getch();
         switch (key) {
         case 'q':
+        case 'Q':
             do {
                 title();
                 cout << "Choose size n-puzzle\n[2][3][4][5][6][7][8][9]"
@@ -287,6 +298,7 @@ bool menu() {
             return false;
             break;
         case 'w':
+        case 'W':
             do {
                 title();
                 cout << "Choose size n-puzzle\n[2][3][4][5][6][7][8][9]"
