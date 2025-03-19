@@ -28,6 +28,7 @@ bool gameWon = false;
 bool isInGame = false;
 bool restart = false;
 bool five_seconds = false;
+const int SCORES_PER_PAGE = 10; // Number of scores to display per page
 
 mutex gameMutex;
 
@@ -38,7 +39,7 @@ bool isSolved();
 void swapTile(int p, int q);
 void draw(bool win, int timeTaken);
 void saveScore(string name, int timeTaken, int moves);
-void showHighScores();
+void showHighScores(int page);
 void updateTimeDisplay();
 bool menu();
 
@@ -196,7 +197,7 @@ void saveScore(string name, int timeTaken, int moves) {
     fileOut.close();
 }
 
-void showHighScores() {
+void showHighScores(int page = 0) {
     const string filename = "data.dat";
     vector<pair<int, pair<int, string>>> scores;
 
@@ -234,30 +235,73 @@ void showHighScores() {
 
     sort(scores.begin(), scores.end());
 
-    cout << "      High Scores (Size " << sizeN << ")" << endl;
+    int totalPages = (scores.size() + SCORES_PER_PAGE - 1) /
+                     SCORES_PER_PAGE; // Ceiling division
+    if (totalPages == 0)
+        totalPages = 1; // At least one page even if empty
+
+    // Ensure page is within valid range
+    if (page < 0)
+        page = 0;
+    if (page >= totalPages)
+        page = totalPages - 1;
+
+    int startIdx = page * SCORES_PER_PAGE;
+    int endIdx = min(startIdx + SCORES_PER_PAGE, (int)scores.size());
+
+    title(false, 32);
+    cout << "High Scores (Size " << sizeN << ") - Page " << (page + 1) << "/"
+         << totalPages << endl;
     cout << "--------------------------------" << endl;
-    int idx = 1;
-    for (auto &score : scores) {
-        for (int i = 0; score.second.second.length() < 6; i++)
-            score.second.second += " ";
-        cout << idx++ << (idx < 11 ? "  | " : " | ") << score.second.second
-             << (score.first < 10
-                     ? " |    "
-                     : (score.first < 100
-                            ? " |   "
-                            : (score.first < 1000 ? " |  " : " | ")))
-             << score.first
-             << (score.second.first < 10
-                     ? "s |    "
-                     : (score.second.first < 100
-                            ? "s |   "
-                            : (score.second.first < 1000 ? "s |  " : "s | ")))
-             << score.second.first << " moves" << endl;
-        if (idx > 10)
-            break;
-    }
-    if (idx == 1)
+
+    if (scores.empty()) {
         cout << "No high scores yet." << endl;
+    } else {
+        for (int i = startIdx; i < endIdx; i++) {
+            auto &score = scores[i];
+            for (int j = 0; score.second.second.length() < 6; j++)
+                score.second.second += " ";
+
+            cout << (i + 1) << (i + 1 < 10 ? "  | " : " | ")
+                 << score.second.second
+                 << (score.first < 10
+                         ? " |    "
+                         : (score.first < 100
+                                ? " |   "
+                                : (score.first < 1000 ? " |  " : " | ")))
+                 << score.first
+                 << (score.second.first < 10
+                         ? "s |    "
+                         : (score.second.first < 100
+                                ? "s |   "
+                                : (score.second.first < 1000 ? "s |  "
+                                                             : "s | ")))
+                 << score.second.first << " moves" << endl;
+        }
+    }
+
+    cout << "--------------------------------" << endl;
+    if (totalPages > 1) {
+        if (page > 0)
+            cout << "[P] Previous ";
+        if (page < totalPages - 1)
+            cout << "[N] Next ";
+    }
+    cout << "[B] Back" << endl;
+
+    bool exitView = false;
+    while (!exitView) {
+        int key = getch();
+        if (key == 'b' || key == 'B') {
+            exitView = true;
+        } else if ((key == 'n' || key == 'N') && page < totalPages - 1) {
+            showHighScores(page + 1);
+            exitView = true;
+        } else if ((key == 'p' || key == 'P') && page > 0) {
+            showHighScores(page - 1);
+            exitView = true;
+        }
+    }
 }
 
 void updateTimeDisplay() {
@@ -300,14 +344,11 @@ bool menu() {
                 sizeN = key - '0';
                 cout << "-------------------------" << endl;
             } while (sizeN < 2 || sizeN > 9);
-            title(false, 32);
             showHighScores();
-            cout << "--------------------------------" << endl;
-            cout << "[B] Back" << endl;
-            key = getch();
-            if (key == 'b' || key == 'B')
-                menu();
-            return false;
+            if (menu())
+                return true;
+            else
+                return false;
             break;
         case 27:
             return true;
@@ -367,15 +408,7 @@ int main() {
                     while (true) {
                         int key = getch();
                         if (key == 'h' || key == 'H') {
-                            title(false, 32);
                             showHighScores();
-                            cout << "-------------------------------" << endl;
-                            cout << "[B] Back" << endl;
-                            while (true) {
-                                int key = getch();
-                                if (key == 'b' || key == 'B')
-                                    break;
-                            }
                             break;
                         }
                         if (key == 27) {
