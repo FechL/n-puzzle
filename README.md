@@ -15,7 +15,7 @@ This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a tim
 ### Steps to Install
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/n-puzzle.git
+   git clone https://github.com/FechL/n-puzzle.git
    cd n-puzzle
    ```
 
@@ -44,13 +44,13 @@ This implementation features adjustable puzzle sizes (from 2x2 up to 9x9), a tim
 
 ## Controls
 
-| Keys       | Description                       |
-|------------|-----------------------------------|
-| Arrow keys | Move tiles                        |
-| **R**      |  Restart the current puzzle       |
-| **E**      |  Generate a new randomized puzzle | 
-| **B**      |  Go back to the menu              | 
-| **Esc**    |  Exit the game                    | 
+| Keys       | Description                      |
+| ---------- | -------------------------------- |
+| Arrow keys | Move tiles                       |
+| **R**      | Restart the current puzzle       |
+| **E**      | Generate a new randomized puzzle |
+| **B**      | Go back to the menu              |
+| **Esc**    | Exit the game                    |
 
 ## Features
 
